@@ -24,4 +24,4 @@ package-dir = {"" = "src"}
 packages = ["app", "agents"]
 
 [project.scripts]
-dev = "cli:run_dev_server"
+api = "cli:run_dev_server"
