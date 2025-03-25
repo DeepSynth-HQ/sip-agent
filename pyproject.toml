@@ -6,6 +6,22 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "agno>=1.2.3",
+    "fastapi>=0.115.12",
+    "openai>=1.68.2",
     "pydantic>=2.10.6",
     "requests>=2.32.3",
+    "uvicorn>=0.34.0",
 ]
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel>=0.37.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["app", "agents"]
+
+[project.scripts]
+dev = "cli:run_dev_server"
