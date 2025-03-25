@@ -1,10 +1,9 @@
 from settings.config import config
 from settings.log import logger
-from langchain_core.tools import tool
 from langchain_openai import OpenAIEmbeddings
 import pandas as pd
 from qdrant_client import QdrantClient
-@tool
+
 def search_knowledge_base(self, thinking: str, action_name: str, queries: list[str]):
         """
         Get documents from the vector database for the campaign. Or related terminologies about the campaign
