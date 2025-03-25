@@ -21,13 +21,15 @@ class AgentHandler:
                 request.user_id,
                 request.session_id,
             ):
-                if chunk.content_type == "answer":
+                if chunk.content_type == "str":
                     aggregate_response += str(chunk.content)
                 data = {
                     "v": str(chunk.content),
                     "t": chunk.content_type,
                 }
                 yield f"event: {chunk.content_type}\ndata: {json.dumps(data)}\n\n"
+
+            # Yield the final response
             data = {
                 "v": aggregate_response,
             }

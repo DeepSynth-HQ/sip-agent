@@ -16,5 +16,9 @@ class AgentService:
         self.agent.user_id = user_id
         self.agent.session_id = session_id
 
-        response = self.agent.run(message, images, stream)
+        response = self.agent.run(
+            message=message,
+            images=images,
+            stream=stream,
+        )
         return response
