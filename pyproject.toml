@@ -9,6 +9,7 @@ dependencies = [
     "fastapi>=0.115.12",
     "openai>=1.68.2",
     "pydantic>=2.10.6",
+    "pymongo>=4.11.3",
     "requests>=2.32.3",
     "uvicorn>=0.34.0",
 ]
