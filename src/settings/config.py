@@ -13,3 +13,12 @@ class Config:
 
 
 config = Config()
+
+
+class CeleryConfig:
+    broker = os.getenv("CELERY_BROKER_URL")
+    backend = os.getenv("CELERY_RESULT_BACKEND")
+    include = ["task_queue.tasks"]
+    enable_utc = True
+    timezone = "UTC"
+    broker_connection_retry_on_startup = True
