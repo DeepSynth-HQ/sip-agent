@@ -121,3 +121,6 @@ dmypy.json
 
 # Project specific
 .DS_Store 
+
+#notebook
+notebook/
