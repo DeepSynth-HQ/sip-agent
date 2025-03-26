@@ -54,3 +54,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 API_PREFIX_V1 = "/api/v1"
 app.include_router(agent_router, prefix=API_PREFIX_V1)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
