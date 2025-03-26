@@ -1,7 +1,7 @@
 import requests
 from typing import Optional, Generic, TypeVar, List, Dict, Any
 from settings.config import config
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 from settings.log import logger
 
 T = TypeVar("T")
@@ -43,7 +43,7 @@ class StoryIpStatsResponse(BaseModel):
 
 class ContractImplementation(BaseModel):
     address: str
-    name: str
+    name: Optional[str] = None
 
 
 class ContractAddress(BaseModel):
@@ -75,9 +75,102 @@ class ContractInfo(BaseModel):
     verified_at: str
 
 
+class TrendingContractInfo(ContractInfo):
+    contract: str
+    total_transactions_in_1d: int = Field(alias="totalTransactionsIn1d")
+
+
 class ContractsResponse(BaseModel):
     items: List[ContractInfo]
     next_page_params: Optional[Dict[str, Any]]
+
+
+class TrendingContractsResponse(RootModel[List[TrendingContractInfo]]):
+    pass
+
+
+class ContractInfoResponse(BaseModel):
+    """Model for the contract info endpoint response which has a different structure."""
+
+    address: str
+    implementations: List[ContractImplementation]
+    is_contract: bool
+    is_verified: bool
+    name: Optional[str] = None
+    ens_domain_name: Optional[str] = None
+    is_scam: bool = False
+    metadata: Optional[Any] = None
+    private_tags: List[str] = Field(default_factory=list)
+    proxy_type: Optional[str] = None
+    public_tags: List[str] = Field(default_factory=list)
+    watchlist_names: List[str] = Field(default_factory=list)
+
+
+class OracleBreakdown(BaseModel):
+    name: str
+    type: str
+    proof: List[str]
+
+
+class BaseProtocol(BaseModel):
+    """Base model for all protocol types to reduce duplication."""
+
+    id: str
+    name: str
+    address: Optional[str] = None
+    symbol: str
+    url: str
+    description: str
+    chain: str
+    logo: str
+    audits: str
+    audit_note: Optional[str] = None
+    gecko_id: Optional[str] = None
+    cmc_id: Optional[str] = Field(alias="cmcId", default=None)
+    category: str
+    chains: List[str]
+    oracles: List[str] = Field(default_factory=list)
+    oracles_breakdown: Optional[List[OracleBreakdown]] = Field(
+        alias="oraclesBreakdown", default=None
+    )
+    forked_from: List[str] = Field(alias="forkedFrom", default_factory=list)
+    module: str
+    twitter: Optional[str] = None
+    audit_links: Optional[List[str]] = Field(alias="audit_links", default_factory=list)
+    listed_at: Optional[int] = Field(alias="listedAt", default=None)
+    methodology: Optional[str] = None
+    slug: str
+    tvl: float
+    chain_tvls: Dict[str, float] = Field(alias="chainTvls")
+    change_1h: str
+    change_1d: str
+    change_7d: str
+    token_breakdowns: Dict[str, Any] = Field(
+        alias="tokenBreakdowns", default_factory=dict
+    )
+    mcap: Optional[float] = None
+    # Optional fields that may be present in some protocol types
+    parent_protocol: Optional[str] = Field(alias="parentProtocol", default=None)
+    github: Optional[List[str]] = None
+    asset_token: Optional[str] = Field(alias="assetToken", default=None)
+
+
+class LiquidityProtocol(BaseProtocol):
+    """Liquidity protocol model with required asset_token field."""
+
+    asset_token: str = Field(alias="assetToken")
+
+
+class LendingProtocol(BaseProtocol):
+    """Lending protocol model."""
+
+    pass
+
+
+class TvlProtocol(BaseProtocol):
+    """TVL protocol model."""
+
+    pass
 
 
 class OnChainFunctions:
@@ -121,6 +214,84 @@ class OnChainFunctions:
         json_response = response.json()
         return BaseResponse[ContractsResponse].model_validate(json_response)
 
+    @staticmethod
+    def get_trending_contracts(
+        limit: int = 3,
+    ) -> BaseResponse[List[TrendingContractInfo]]:
+        """
+        Get trending contracts on the Story Protocol network.
+
+        Args:
+            limit (int): The top N trending contracts to return.
+
+        Returns:
+            BaseResponse[List[TrendingContractInfo]]: Trending contracts
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/contract/trending",
+            params={"limit": limit},
+        )
+        return BaseResponse[List[TrendingContractInfo]].model_validate(response.json())
+
+    @staticmethod
+    def get_contract_info(address: str) -> BaseResponse[ContractInfoResponse]:
+        """
+        Get contract info by address.
+
+        Args:
+            address (str): The contract address to look up
+
+        Returns:
+            BaseResponse[ContractInfoResponse]: Contract information
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/contract/find/{address}",
+        )
+        return BaseResponse[ContractInfoResponse].model_validate(response.json())
+
+    @staticmethod
+    def get_top_liquidity_protocols(
+        limit: int = 3,
+    ) -> BaseResponse[List[LiquidityProtocol]]:
+        """
+        Get top liquidity protocols on the Story Protocol network.
+
+        Args:
+            limit (int): The top N liquidity protocols to return.
+
+        Returns:
+            BaseResponse[List[LiquidityProtocol]]: Top liquidity protocols
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/pool/topLPStaking",
+            params={"limit": limit},
+        )
+        return BaseResponse[List[LiquidityProtocol]].model_validate(response.json())
+
+    @staticmethod
+    def get_top_lending_protocols(
+        limit: int = 3,
+    ) -> BaseResponse[List[LendingProtocol]]:
+        """
+        Get top lending protocols on the Story Protocol network.
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/pool/topLending",
+            params={"limit": limit},
+        )
+        return BaseResponse[List[LendingProtocol]].model_validate(response.json())
+
+    @staticmethod
+    def get_top_tvl_protocols(limit: int = 3) -> BaseResponse[List[TvlProtocol]]:
+        """
+        Get top tvl (total value locked) protocols on the Story Protocol network.
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/pool/topTvl",
+            params={"limit": limit},
+        )
+        return BaseResponse[List[TvlProtocol]].model_validate(response.json())
+
 
 if __name__ == "__main__":
-    print(OnChainFunctions.get_all_contracts())
+    print(OnChainFunctions.get_top_tvl_protocols(limit=3))
