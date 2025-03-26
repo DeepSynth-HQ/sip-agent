@@ -7,7 +7,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.core.errors import Error, ERROR_DETAILS
 from fastapi.encoders import jsonable_encoder
 from fastapi import status
+from fastapi.responses import Response
 from app.routes.auth import router as auth_router
+from app.routes.user import router as user_router
 
 app = FastAPI(
     title="Agent API",
@@ -55,9 +57,32 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     )
 
 
+@app.middleware("http")
+async def cors_handler(request: Request, call_next):
+    if request.method == "OPTIONS":
+        response = Response(
+            status_code=204,
+            headers={
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*",
+            },
+        )
+    else:
+        response = await call_next(request)
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+
+    return response
+
+
 API_PREFIX_V1 = "/api/v1"
 app.include_router(agent_router, prefix=API_PREFIX_V1)
 app.include_router(auth_router, prefix=API_PREFIX_V1)
+app.include_router(user_router, prefix=API_PREFIX_V1)
 
 
 @app.get("/health")

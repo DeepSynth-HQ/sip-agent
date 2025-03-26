@@ -118,7 +118,12 @@ class ChatHistoryService:
         return [
             dto
             for session in paginated_sessions
-            if (dto := self._create_chat_history_dto(session, is_all=True)) is not None
+            if (
+                dto := self._create_chat_history_dto(
+                    session_id=session_id, session=session, is_all=True
+                )
+            )
+            is not None
         ]
 
     def delete_conversation(self, session_id: str):
