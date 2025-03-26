@@ -9,3 +9,6 @@ class User(BaseModel):
     picture: str
     username: Optional[str] = None
     google_id: Optional[str] = None
+    wallet_address: Optional[str] = None
+    wallet_private_key: Optional[str] = None
+    wallet_mnemonic: Optional[str] = None

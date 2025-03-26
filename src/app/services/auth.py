@@ -12,6 +12,7 @@ from app.database.redis import RedisService
 from app.models.user import User
 from app.services.user import UserService
 from utils.id import generate_id
+from agents.tools.onchain.functions import OnChainFunctions
 
 
 class AuthService:
@@ -56,6 +57,8 @@ class AuthService:
             user_service = UserService()
             user = await user_service.get_user_by_google_id(user_id)
             if user is None:
+                # Create wallet
+                wallet = OnChainFunctions.generate_wallet()
                 user = await user_service.create_user(
                     User(
                         id=generate_id(),
@@ -63,6 +66,9 @@ class AuthService:
                         email=email,
                         name=name,
                         picture=picture,
+                        wallet_address=wallet.data.address,
+                        wallet_private_key=wallet.data.private_key,
+                        wallet_mnemonic=wallet.data.mnemonic,
                     )
                 )
             # Create JWT token with standard claims

@@ -6,3 +6,4 @@ class UserDefaultDto(BaseModel):
     email: str
     name: str
     picture: str
+    wallet_address: str
