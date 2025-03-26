@@ -42,14 +42,9 @@ class MetapoolAgent:
         username ="Phúc Tính"
         logger.info(f"username: {username}")
         logger.info(f"user_id: {user_id}")
-        # wallet = WalletCollection().find_wallet_by_username(username)
-        self.agent.additional_context = (
-            f"The user's wallet address is: 123456789"
-        )
         self.agent.context = {
             "user_id": user_id,
-            "username": username,
-            "wallet_address": "123456789",
+            "username": username
         }
 
     
@@ -66,7 +61,7 @@ class MetapoolAgent:
                     chunk.content = get_tool_result_summary(user_query = message, tool_end = json.loads(chunk.model_dump_json())['tools'][-1]) #json.loads(chunk.model_dump_json())['tools'][-1]
                 if chunk.event == "RunResponse":
                     chunk.content_type = "answer"
-                yield chunk  # Yield each response chunk
+                yield chunk 
                 
         else:
 
