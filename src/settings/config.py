@@ -11,6 +11,18 @@ class Config:
     STORY_PROTOCOL_API_BASE_URL = os.getenv("STORY_PROTOCOL_API_BASE_URL")
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
+    ## Google Auth
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+    GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+
+    ## JWT
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
+    ## Redis
+    REDIS_URI = os.getenv("REDIS_URI")
+
 
 config = Config()
 

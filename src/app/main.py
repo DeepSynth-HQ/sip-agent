@@ -7,6 +7,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.core.errors import Error, ERROR_DETAILS
 from fastapi.encoders import jsonable_encoder
 from fastapi import status
+from app.routes.auth import router as auth_router
 
 app = FastAPI()
 
@@ -54,6 +55,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 API_PREFIX_V1 = "/api/v1"
 app.include_router(agent_router, prefix=API_PREFIX_V1)
+app.include_router(auth_router, prefix=API_PREFIX_V1)
+
 
 @app.get("/health")
 async def health_check():
