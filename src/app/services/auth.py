@@ -9,6 +9,9 @@ from app.dtos.auth import AuthResponseDto, LoginResponseDto
 from app.dtos.user import UserDefaultDto
 from fastapi import Request, HTTPException
 from app.database.redis import RedisService
+from app.models.user import User
+from app.services.user import UserService
+from utils.id import generate_id
 
 
 class AuthService:
@@ -50,10 +53,22 @@ class AuthService:
             name = idinfo.get("name")
             picture = idinfo.get("picture")
 
+            user_service = UserService()
+            user = await user_service.get_user_by_google_id(user_id)
+            if user is None:
+                user = await user_service.create_user(
+                    User(
+                        id=generate_id(),
+                        google_id=user_id,
+                        email=email,
+                        name=name,
+                        picture=picture,
+                    )
+                )
             # Create JWT token with standard claims
             access_token = create_jwt_token(
                 {
-                    "sub": user_id,  # Subject (user ID)
+                    "sub": user.id,  # Subject (user ID)
                     "iss": "https://accounts.google.com",
                     "iat": datetime.now(timezone.utc),
                     "exp": datetime.now(timezone.utc) + timedelta(days=30),
@@ -66,7 +81,7 @@ class AuthService:
 
             refresh_token = create_jwt_token(
                 {
-                    "sub": user_id,
+                    "sub": user.id,
                     "iat": datetime.now(timezone.utc),
                     "exp": datetime.now(timezone.utc) + timedelta(days=365),
                     "token_type": "refresh_token",

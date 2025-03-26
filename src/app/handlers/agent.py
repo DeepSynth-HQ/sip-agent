@@ -2,6 +2,7 @@ from app.services.agent import AgentService
 from app.dtos.agent import AgentChatRequest
 import json
 from fastapi.responses import StreamingResponse
+from app.models.user import User
 
 
 class AgentHandler:
@@ -11,6 +12,7 @@ class AgentHandler:
     def run(
         self,
         request: AgentChatRequest,
+        user: User,
     ):
         def event_generator():
             aggregate_response = ""
@@ -18,7 +20,7 @@ class AgentHandler:
                 request.message,
                 request.images,
                 request.stream,
-                request.user_id,
+                user.id,
                 request.session_id,
             ):
                 if chunk.content_type == "str":

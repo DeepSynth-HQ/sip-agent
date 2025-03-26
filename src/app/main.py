@@ -9,7 +9,9 @@ from fastapi.encoders import jsonable_encoder
 from fastapi import status
 from app.routes.auth import router as auth_router
 
-app = FastAPI()
+app = FastAPI(
+    title="Agent API",
+)
 
 
 class UnicornException(Exception):

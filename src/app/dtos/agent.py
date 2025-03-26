@@ -6,5 +6,4 @@ class AgentChatRequest(BaseModel):
     message: str
     images: list[str] = []
     stream: Optional[bool] = True
-    user_id: str
     session_id: str
