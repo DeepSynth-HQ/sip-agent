@@ -1,7 +1,6 @@
 from settings.config import config
 from settings.log import logger
 from langchain_openai import OpenAIEmbeddings
-import pandas as pd
 from qdrant_client import QdrantClient
 
 def search_knowledge_base(self, thinking: str, action_name: str, queries: list[str]):

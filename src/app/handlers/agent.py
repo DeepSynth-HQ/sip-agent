@@ -1,4 +1,4 @@
-from app.services.agent import AgentService
+from app.services.agent import AgentServices
 from app.dtos.agent import AgentChatRequest
 import json
 from fastapi.responses import StreamingResponse
@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 
 class AgentHandler:
     def __init__(self):
-        self.agent_service = AgentService()
+        self.agent_service = AgentServices()
 
     def run(
         self,
@@ -14,25 +14,18 @@ class AgentHandler:
     ):
         def event_generator():
             aggregate_response = ""
-            for chunk in self.agent_service.run(
-                request.message,
-                request.images,
-                request.stream,
-                request.user_id,
-                request.session_id,
-            ):
-                if chunk.content_type == "str":
+            for chunk in self.agent_service.run(message = request.message, stream = True, stream_intermediate_steps=True):
+                if chunk.content_type == "answer":
                     aggregate_response += str(chunk.content)
                 data = {
                     "v": str(chunk.content),
                     "t": chunk.content_type,
                 }
                 yield f"event: {chunk.content_type}\ndata: {json.dumps(data)}\n\n"
-
-            # Yield the final response
             data = {
                 "v": aggregate_response,
             }
             yield f"event: end\ndata: {json.dumps(data)}\n\n"
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
+
