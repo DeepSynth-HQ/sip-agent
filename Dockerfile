@@ -7,4 +7,4 @@ COPY . .
 
 RUN uv sync --frozen
 
-CMD ["uv", "run", "api"]
+CMD ["uv", "run", "api-prod"]
