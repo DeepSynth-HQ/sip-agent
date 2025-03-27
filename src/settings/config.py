@@ -42,7 +42,7 @@ class CeleryConfig:
         },
         "get_mentions": {
             "task": "tasks.x.get_mentions",
-            "schedule": 300,
+            "schedule": 80,
             "options": {"queue": "celery"},
         },
     }
