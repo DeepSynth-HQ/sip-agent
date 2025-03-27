@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Optional
 import uuid
 
 
@@ -14,7 +14,7 @@ class ChatHistoryDTO(BaseModel):
     title: str
     data: list[Message] | None = None
     created_at: datetime
-    session_id: str
+    session_id: Optional[str] = None
 
 
 class UpdateTitleRequest(BaseModel):
