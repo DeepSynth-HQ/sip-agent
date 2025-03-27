@@ -7,6 +7,7 @@ from agents.prompts.base import system_prompt, instructions
 from agents.tools.search_knowledge_base import search_knowledge_base
 from agents.tools.web_crawler import webpage_crawler
 from agents.tools.web_search import search
+from agents.chat.storage import storage
 from agno.storage.mongodb import MongoDbStorage as MongoDbAgentStorage  # noqa: F401
 from settings.config import config
 from agno.utils.log import logger
@@ -14,9 +15,6 @@ from utils.functions import get_tool_result_summary
 class MetapoolAgent:
 
     def __init__(self, user_id: str, session_id: str):
-        self.storage = MongoDbAgentStorage(
-            collection_name="story_protocol", db_url=config.MONGO_URI, db_name=config.DB_NAME
-        )
         self.user_id = user_id
         self.session_id = session_id
         
@@ -28,7 +26,7 @@ class MetapoolAgent:
             description=system_prompt,
             instructions=instructions,
             debug_mode=True,
-            storage=self.storage,
+            storage=storage,
             session_id=self.session_id,
             user_id=self.user_id,
             read_chat_history=True,
