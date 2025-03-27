@@ -1,5 +1,6 @@
 from agno.tools import Toolkit
 from .functions import OnChainFunctions
+from agno.agent import Agent
 
 
 class StoryProtocolTool(Toolkit):
@@ -28,6 +29,12 @@ class StoryProtocolTool(Toolkit):
         )
         self.register(
             self.get_contract_info,
+        )
+        self.register(
+            self.staking,
+        )
+        self.register(
+            self.unstaking,
         )
 
     def get_all_contracts(self) -> str:
@@ -110,3 +117,36 @@ class StoryProtocolTool(Toolkit):
             str: The information about the contract on the Story Protocol network.
         """
         return OnChainFunctions.get_contract_info(address=address).model_dump_json()
+
+    def staking(self, agent: Agent, amount: float) -> str:
+        """Stake tokens on the Story Protocol network.
+
+        Args:
+            receiver (str): The address to receive the staked tokens (stIP)
+            amount (float): The amount of tokens to stake
+
+        Returns:
+            str: The staking response on the Story Protocol network.
+        """
+        user_id = agent.context.get("user_id", None)
+        if not user_id:
+            raise ValueError("User ID is not set")
+        return OnChainFunctions.staking(
+            receiver=user_id, amount=amount
+        ).model_dump_json()
+
+    def unstaking(self, agent: Agent, amount: float) -> str:
+        """Unstake tokens on the Story Protocol network.
+
+        Args:
+            amount (float): The amount of tokens to unstake
+
+        Returns:
+            str: The unstaking response on the Story Protocol network.
+        """
+        user_id = agent.context.get("user_id", None)
+        if not user_id:
+            raise ValueError("User ID is not set")
+        return OnChainFunctions.unstaking(
+            receiver=user_id, amount=amount
+        ).model_dump_json()
