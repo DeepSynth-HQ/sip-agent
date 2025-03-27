@@ -9,7 +9,7 @@ def run_dev_server():
 
 def run_celery():
     """Entry point for the celery worker."""
-    app.worker_main(["worker", "--loglevel=info"])
+    app.worker_main(["worker", "--loglevel=info", "--queues=agent", "--beat"])
 
 
 def run_prod_server():

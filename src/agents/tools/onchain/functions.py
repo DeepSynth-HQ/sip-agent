@@ -173,6 +173,10 @@ class TvlProtocol(BaseProtocol):
     pass
 
 
+class StakingResponse(BaseModel):
+    tx_hash: str = Field(alias="txHash")
+
+
 class OnChainFunctions:
     @staticmethod
     def generate_wallet() -> BaseResponse[GenerateWalletResponse]:
@@ -291,6 +295,42 @@ class OnChainFunctions:
             params={"limit": limit},
         )
         return BaseResponse[List[TvlProtocol]].model_validate(response.json())
+
+    @staticmethod
+    def staking(receiver: str, amount: float) -> BaseResponse[StakingResponse]:
+        """
+        Stake tokens on the Story Protocol network.
+
+        Args:
+            receiver (str): The address to receive the staked tokens (stIP)
+            amount (float): The amount of tokens to stake
+
+        Returns:
+            BaseResponse[StakingResponse]: Staking response
+        """
+        response = requests.post(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/mainnet/metapool/staking",
+            json={"receiver": receiver, "amount": str(amount)},
+        )
+        return BaseResponse[StakingResponse].model_validate(response.json())
+
+    @staticmethod
+    def unstaking(receiver: str, amount: float) -> BaseResponse[StakingResponse]:
+        """
+        Unstake tokens on the Story Protocol network.
+
+        Args:
+            receiver (str): The address to receive the unstaked tokens
+            amount (float): The amount of shares to unstake
+
+        Returns:
+            BaseResponse[StakingResponse]: Unstaking response
+        """
+        response = requests.post(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/mainnet/metapool/unstaking",
+            json={"receiver": receiver, "owner": receiver, "shares": str(amount)},
+        )
+        return BaseResponse[StakingResponse].model_validate(response.json())
 
 
 if __name__ == "__main__":

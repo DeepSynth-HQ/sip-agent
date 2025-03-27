@@ -122,3 +122,4 @@ dmypy.json
 # Project specific
 .DS_Store 
 notebook/
+celerybeat-schedule.db
