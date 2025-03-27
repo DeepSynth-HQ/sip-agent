@@ -5,13 +5,16 @@ from task_queue.tasks.x import (
     reply_to_tweet as reply_to_tweet_task,
 )
 from settings.log import logger
+from celery.result import allow_join_result
+import json
 
 
 class XFunctions:
     @staticmethod
     def create_tweet(text: str, media_paths: List[str] = []):
         """
-        Create a new X post
+        Create a new X post.
+        Dont use this function to reply to a tweet. Use the reply_to_tweet function instead.
 
         Args:
             text (str): The text of the post
@@ -20,10 +23,14 @@ class XFunctions:
         Returns:
             Task: The task that creates the tweet
         """
-        task = create_tweet_task.delay(text, media_paths)
-        result = task.get()
+        create_tweet_task.delay(text, media_paths)
+        result = {
+            "status": "success",
+            "text": text,
+            "media_paths": media_paths,
+        }
         logger.info(f"[🚩] Created tweet task: {result}")
-        return str(result)
+        return json.dumps(result)
 
     @staticmethod
     def reply_to_tweet(text: str, tweet_id: str, username: str, media_paths: List[str]):
@@ -38,7 +45,12 @@ class XFunctions:
         Returns:
             Task: The task that replies to the tweet
         """
-        task = reply_to_tweet_task.delay(text, tweet_id, username, media_paths)
-        result = task.get()
-        logger.info(f"[🚩] Created reply task: {result}")
-        return str(result)
+        reply_to_tweet_task.delay(text, tweet_id, username, media_paths)
+        result = {
+            "status": "success",
+            "text": text,
+            "tweet_id": tweet_id,
+            "username": username,
+            "media_paths": media_paths,
+        }
+        return json.dumps(result)
