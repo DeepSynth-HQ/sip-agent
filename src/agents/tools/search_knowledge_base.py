@@ -3,7 +3,7 @@ from settings.log import logger
 from langchain_openai import OpenAIEmbeddings
 from qdrant_client import QdrantClient
 
-def search_knowledge_base(self, thinking: str, action_name: str, queries: list[str]):
+def search_knowledge_base(thinking: str, action_name: str, queries: list[str]):
         """
         Get documents from the vector database for the campaign. Or related terminologies about the campaign
         Args:
@@ -44,7 +44,6 @@ def search_knowledge_base(self, thinking: str, action_name: str, queries: list[s
         )
         final_docs = []
         for query in queries[:5]:
-            print(f"RETRIEVE TO {query.campaign_name} database")
             try:
                 client = QdrantClient(url=config.QDRANT_URI, api_key=config.QDRANT_API_KEY, port=443)
                 hits = client.query_points(
@@ -60,4 +59,4 @@ def search_knowledge_base(self, thinking: str, action_name: str, queries: list[s
                 pass
         if final_docs:
             final_docs = sorted(final_docs, key=lambda doc: (doc['file_id'], doc['chunk_index']))
-        return final_docs
+        return str(final_docs)

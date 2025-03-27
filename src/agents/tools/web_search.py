@@ -44,4 +44,4 @@ def search(thinking: str, action_name: str, query: str, max_results: int):
     search_tools = Searxng(host = config.SEARXNG_HOST, news = True)
     search_results = json.loads(search_tools.search(query, max_results= 10))
     urls = [result for result in search_results['results']]
-    return urls
+    return str(urls)
