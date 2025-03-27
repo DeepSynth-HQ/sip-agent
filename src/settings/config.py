@@ -34,3 +34,15 @@ class CeleryConfig:
     enable_utc = True
     timezone = "UTC"
     broker_connection_retry_on_startup = True
+    beat_schedule = {
+        "prepare_reply_to_mentions": {
+            "task": "tasks.x.prepare_reply_to_mentions",
+            "schedule": 60,
+            "options": {"queue": "celery"},
+        },
+        "get_mentions": {
+            "task": "tasks.x.get_mentions",
+            "schedule": 300,
+            "options": {"queue": "celery"},
+        },
+    }
