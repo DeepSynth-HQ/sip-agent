@@ -1,4 +1,4 @@
-from src.agents.base import MetapoolAgent
+from agents.base import MetapoolAgent
 class AgentServices:
     def __init__(self, user_id: str, session_id: str):
         self.agent_service = MetapoolAgent(user_id=user_id, session_id=session_id)
