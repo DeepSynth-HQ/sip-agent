@@ -15,7 +15,7 @@ class MetapoolAgent:
 
     def __init__(self, user_id: str, session_id: str):
         self.storage = MongoDbAgentStorage(
-            collection_name="storage_agent", db_url=config.MONGO_URI, db_name="agent"
+            collection_name="story_protocol", db_url=config.MONGO_URI, db_name="config.DB_NAME"
         )
         self.user_id = user_id
         self.session_id = session_id
