@@ -7,20 +7,18 @@ load_dotenv()
 class Config:
     DB_URL = os.getenv("DB_URL")
     DB_NAME = os.getenv("DB_NAME")
-
     STORY_PROTOCOL_API_BASE_URL = os.getenv("STORY_PROTOCOL_API_BASE_URL")
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-
-    ## Google Auth
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    SEARXNG_HOST = os.getenv("SEARXNG_HOST", "")
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-    GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
-
-    ## JWT
+    GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:6789/auth/callback/google")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-
-    ## Redis
+    QDRANT_URI = os.getenv("QDRANT_URI")
+    QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
     REDIS_URI = os.getenv("REDIS_URI")
 
 

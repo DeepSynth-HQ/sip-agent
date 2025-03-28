@@ -13,8 +13,8 @@ router = APIRouter(prefix="/agents", tags=["agents"])
 
 @router.post("/chat")
 def agent(request: AgentChatRequest, user: User = Depends(get_current_user)):
-    agent_handler = AgentHandler()
-    return agent_handler.run(request, user)
+    agent_handler = AgentHandler(request = request, user = user)
+    return agent_handler.run()
 
 
 @router.post("/history/title")
