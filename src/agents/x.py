@@ -1,7 +1,7 @@
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from agents.chat.storage import storage
-from agents.prompts.base import PROMPTS
+from agents.prompts.x import SYSTEM_PROMPT
 from agents.tools.x.actions import XActionsToolkit
 from agno.agent import RunResponse
 from agno.utils.pprint import pprint_run_response
@@ -13,7 +13,7 @@ agent = Agent(
     tools=tools,
     model=model,
     storage=storage,
-    system_message=PROMPTS["x"],
+    system_message=SYSTEM_PROMPT,
     debug_mode=True,
 )
 
