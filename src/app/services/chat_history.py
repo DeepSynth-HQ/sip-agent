@@ -15,9 +15,7 @@ class ChatHistoryService:
     def _create_chat_history_dto(
         self, session_id: str, session, is_all: bool = False
     ) -> ChatHistoryDTO:
-        history, created_at = self._extract_history(
-            session_id, session.memory.get("runs", [])
-        )
+        history, created_at = self._extract_history(session.memory.get("runs", []))
 
         if not history:
             return None
@@ -46,7 +44,7 @@ class ChatHistoryService:
             return question, reasoning, answer
         return message, None, None
 
-    def _extract_history(self, session_id: str, runs: list[dict]):
+    def _extract_history(self, runs: list[dict]):
         history: list[Message] = []
         if not runs:
             return [], None
@@ -120,7 +118,7 @@ class ChatHistoryService:
             for session in paginated_sessions
             if (
                 dto := self._create_chat_history_dto(
-                    session_id=session_id, session=session, is_all=True
+                    session_id=session.session_id, session=session, is_all=True
                 )
             )
             is not None
