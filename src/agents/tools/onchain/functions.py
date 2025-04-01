@@ -177,6 +177,10 @@ class StakingResponse(BaseModel):
     tx_hash: str = Field(alias="txHash")
 
 
+class CheckBalanceResponse(BaseModel):
+    balance: str
+
+
 class OnChainFunctions:
     @staticmethod
     def generate_wallet() -> BaseResponse[GenerateWalletResponse]:
@@ -332,6 +336,40 @@ class OnChainFunctions:
         )
         return BaseResponse[StakingResponse].model_validate(response.json())
 
+    @staticmethod
+    def check_erc20_balance(
+        address: str, token_address: str
+    ) -> BaseResponse[CheckBalanceResponse]:
+        """
+        Check the balance of an ERC20 token for a given address.
+
+        Args:
+            address (str): The address to check the balance of
+            token_address (str): The address of the ERC20 token
+
+        Returns:
+            BaseResponse[CheckBalanceResponse]: Check balance response
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/erc20-balance/{address}/{token_address}",
+        )
+        return BaseResponse[CheckBalanceResponse].model_validate(response.json())
+
+    @staticmethod
+    def check_sepolia_balance(address: str) -> BaseResponse[CheckBalanceResponse]:
+        """
+        Check the balance of an address on the Sepolia testnet.
+        """
+        response = requests.get(
+            f"{config.STORY_PROTOCOL_API_BASE_URL}/evm/story/testnet/balance/{address}",
+        )
+        return BaseResponse[CheckBalanceResponse].model_validate(response.json())
+
 
 if __name__ == "__main__":
-    print(OnChainFunctions.get_top_tvl_protocols(limit=3))
+    print(
+        OnChainFunctions.unstaking(
+            "0x783FC27915754512E72b5811599504eCa458E4C5",
+            0.1,
+        )
+    )

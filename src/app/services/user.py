@@ -10,6 +10,10 @@ class UserService:
         user = self.collection.find_one({"id": user_id})
         return User(**user) if user else None
 
+    def get_user_sync(self, user_id: str) -> User | None:
+        user = self.collection.find_one({"id": user_id})
+        return User(**user) if user else None
+
     async def create_user(self, user: User) -> User:
         self.collection.insert_one(user.model_dump())
         return user

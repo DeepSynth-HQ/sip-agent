@@ -1,6 +1,8 @@
 from agno.tools import Toolkit
 from .functions import OnChainFunctions
 from agno.agent import Agent
+from app.services.user import UserService
+from settings import logger
 
 
 class StoryProtocolTool(Toolkit):
@@ -35,6 +37,12 @@ class StoryProtocolTool(Toolkit):
         )
         self.register(
             self.unstaking,
+        )
+        self.register(
+            self.check_erc20_balance,
+        )
+        self.register(
+            self.check_sepolia_balance,
         )
 
     def get_all_contracts(self) -> str:
@@ -131,8 +139,11 @@ class StoryProtocolTool(Toolkit):
         user_id = agent.context.get("user_id", None)
         if not user_id:
             raise ValueError("User ID is not set")
+        user_model = UserService().get_user_sync(user_id)
+        if not user_model:
+            raise ValueError("User not found")
         return OnChainFunctions.staking(
-            receiver=user_id, amount=amount
+            receiver=user_model.wallet_address, amount=amount
         ).model_dump_json()
 
     def unstaking(self, agent: Agent, amount: float) -> str:
@@ -147,6 +158,46 @@ class StoryProtocolTool(Toolkit):
         user_id = agent.context.get("user_id", None)
         if not user_id:
             raise ValueError("User ID is not set")
+
+        user_model = UserService().get_user_sync(user_id)
+        if not user_model:
+            raise ValueError("User not found")
         return OnChainFunctions.unstaking(
-            receiver=user_id, amount=amount
+            receiver=user_model.wallet_address, amount=amount
+        ).model_dump_json()
+
+    def check_erc20_balance(self, agent: Agent, token_address: str) -> str:
+        """Check the balance of an ERC20 token on the Story Protocol network.
+
+        Args:
+            token_address (str): The address of the ERC20 token to check the balance of.
+
+        Returns:
+            str: The balance of the ERC20 token on the Story Protocol network.
+        """
+        user_id = agent.context.get("user_id", None)
+        if not user_id:
+            raise ValueError("User ID is not set")
+        user_model = UserService().get_user_sync(user_id)
+        if not user_model:
+            raise ValueError("User not found")
+        return OnChainFunctions.check_erc20_balance(
+            address=user_model.wallet_address, token_address=token_address
+        ).model_dump_json()
+
+    def check_sepolia_balance(self, agent: Agent) -> str:
+        """Check the balance of an address on the Sepolia testnet.
+
+        Returns:
+            str: The balance of the address on the Sepolia testnet.
+        """
+        user_id = agent.context.get("user_id", None)
+        if not user_id:
+            raise ValueError("User ID is not set")
+        user_model = UserService().get_user_sync(user_id)
+        logger.debug(f"Wallet address: {user_model.wallet_address}")
+        if not user_model:
+            raise ValueError("User not found")
+        return OnChainFunctions.check_sepolia_balance(
+            address=user_model.wallet_address
         ).model_dump_json()
